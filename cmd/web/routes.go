@@ -49,7 +49,7 @@ func (app *application) auth(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	log.Println("Completed with AUTH")
-	t, err := template.ParseFiles("success.html")
+	t, err := template.ParseFiles("cmd/web/sucess.html")
 	if err != nil {
 		fmt.Println(err)
 		res.WriteHeader(http.StatusInternalServerError)
@@ -63,7 +63,7 @@ func beginAuth(res http.ResponseWriter, req *http.Request) {
 }
 
 func (app *application) showTemplates(res http.ResponseWriter, req *http.Request) {
-	t, err := template.ParseFiles("index.html")
+	t, err := template.ParseFiles("cmd/web/index.html")
 	if err != nil {
 		fmt.Println(err)
 		res.WriteHeader(http.StatusInternalServerError)
