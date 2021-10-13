@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
+	"text/template"
 
 	"github.com/bmizerany/pat"
 	"github.com/gorilla/sessions"
@@ -41,22 +41,6 @@ func (app *application) routes() http.Handler {
 
 	return mux
 }
-func (app *application) auth(res http.ResponseWriter, req *http.Request) {
-	log.Println("In AUTH")
-	user, err := gothic.CompleteUserAuth(res, req)
-	if err != nil {
-		fmt.Fprintln(res, err)
-		return
-	}
-	log.Println("Completed with AUTH")
-	t, err := template.ParseFiles("cmd/web/sucess.html")
-	if err != nil {
-		fmt.Println(err)
-		res.WriteHeader(http.StatusInternalServerError)
-	}
-	log.Println("Parsed the template")
-	t.Execute(res, user)
-}
 
 func beginAuth(res http.ResponseWriter, req *http.Request) {
 	gothic.BeginAuthHandler(res, req)
@@ -69,5 +53,58 @@ func (app *application) showTemplates(res http.ResponseWriter, req *http.Request
 		res.WriteHeader(http.StatusInternalServerError)
 	}
 	t.Execute(res, false)
+}
+
+func (app *application) auth(res http.ResponseWriter, req *http.Request) {
+	log.Println("In AUTH")
+	user, err := gothic.CompleteUserAuth(res, req)
+
+	if err != nil {
+		fmt.Fprintln(res, req)
+		fmt.Println("error here")
+		return
+	}
+
+	s, err := app.users.GetID(user.UserID)
+
+	if s != nil {
+		// app.session.Put(r, "authenticatedUserID", s.ID)
+
+		t, err := template.ParseFiles("cmd/web/sucess.html")
+		if err != nil {
+			fmt.Println(err)
+			res.WriteHeader(http.StatusInternalServerError)
+		}
+		log.Println("Parsed the template")
+		t.Execute(res, user)
+		// http.Redirect(w, r, fmt.Sprintf("/scrap/%d", s.ID), http.StatusSeeOther)
+		return
+	} else {
+		id, err := app.users.Insert(user.UserID, user.Email, 1)
+		if err != nil {
+			// if errors.Is(err, models.ErrDuplicateEmail) {
+			// 	form.Errors.Add("email", "Address is already in use")
+			// 	app.render(w, r, "login.page.tmpl", &templateData{Form: form})
+			// } else {
+			fmt.Println("Error occured during insert to database")
+			// }
+			// return
+		}
+		fmt.Println(id)
+		// app.session.Put(r, "authenticatedUserID", id)
+		t, err := template.ParseFiles("cmd/web/sucess.html")
+		if err != nil {
+			fmt.Println(err)
+			res.WriteHeader(http.StatusInternalServerError)
+		}
+		log.Println("Parsed the template")
+		t.Execute(res, user)
+		// http.Redirect(w, r, fmt.Sprintf("/scrap/%d", id), http.StatusSeeOther)
+	}
+	// if err != nil {
+	// 	fmt.Fprintln(res, err)
+	// 	return
+	// }
+	// log.Println("Completed with AUTH")
 
 }
