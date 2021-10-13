@@ -7,7 +7,7 @@ import (
 var ErrNoRecord = errors.New("models: no matching record found")
 
 type PythonUser struct {
-	userID string
-	email  string
+	UserID string
+	Email  string
 	TaskID int
 }

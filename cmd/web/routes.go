@@ -60,16 +60,13 @@ func (app *application) auth(res http.ResponseWriter, req *http.Request) {
 	user, err := gothic.CompleteUserAuth(res, req)
 
 	if err != nil {
-		fmt.Fprintln(res, req)
-		fmt.Println("error here")
+		log.Println(err)
+
 		return
 	}
-
 	s, err := app.users.GetID(user.UserID)
 
 	if s != nil {
-		// app.session.Put(r, "authenticatedUserID", s.ID)
-
 		t, err := template.ParseFiles("cmd/web/sucess.html")
 		if err != nil {
 			fmt.Println(err)
@@ -77,21 +74,13 @@ func (app *application) auth(res http.ResponseWriter, req *http.Request) {
 		}
 		log.Println("Parsed the template")
 		t.Execute(res, user)
-		// http.Redirect(w, r, fmt.Sprintf("/scrap/%d", s.ID), http.StatusSeeOther)
 		return
 	} else {
 		id, err := app.users.Insert(user.UserID, user.Email, 1)
 		if err != nil {
-			// if errors.Is(err, models.ErrDuplicateEmail) {
-			// 	form.Errors.Add("email", "Address is already in use")
-			// 	app.render(w, r, "login.page.tmpl", &templateData{Form: form})
-			// } else {
 			fmt.Println("Error occured during insert to database")
-			// }
-			// return
 		}
 		fmt.Println(id)
-		// app.session.Put(r, "authenticatedUserID", id)
 		t, err := template.ParseFiles("cmd/web/sucess.html")
 		if err != nil {
 			fmt.Println(err)
@@ -99,12 +88,5 @@ func (app *application) auth(res http.ResponseWriter, req *http.Request) {
 		}
 		log.Println("Parsed the template")
 		t.Execute(res, user)
-		// http.Redirect(w, r, fmt.Sprintf("/scrap/%d", id), http.StatusSeeOther)
 	}
-	// if err != nil {
-	// 	fmt.Fprintln(res, err)
-	// 	return
-	// }
-	// log.Println("Completed with AUTH")
-
 }
