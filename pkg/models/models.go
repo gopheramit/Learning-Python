@@ -11,3 +11,10 @@ type PythonUser struct {
 	Email  string
 	TaskID int
 }
+
+type Tasks struct {
+	TaskID          int
+	TaskName        string
+	TaskDescription string
+	Difficulty      string
+}

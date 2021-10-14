@@ -45,3 +45,19 @@ func (m *UserModel) GetID(id string) (*models.PythonUser, error) {
 	}
 	return s, nil
 }
+
+func (m *UserModel) GetTaskByID(id int) (*models.Tasks, error) {
+
+	stmt := `SELECT TaskID,TaskName,TaskDescription,Difficulty from Tasks where TaskID =?`
+	row := m.DB.QueryRow(stmt, id)
+	s := &models.Tasks{}
+	err := row.Scan(&s.TaskID, &s.TaskName, &s.TaskDescription, &s.Difficulty)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, models.ErrNoRecord
+		} else {
+			return nil, err
+		}
+	}
+	return s, nil
+}

@@ -1,10 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"net/http"
-	"text/template"
 
 	"github.com/bmizerany/pat"
 	"github.com/gorilla/sessions"
@@ -40,53 +37,4 @@ func (app *application) routes() http.Handler {
 	mux.Get("/", http.HandlerFunc(app.showTemplates))
 
 	return mux
-}
-
-func beginAuth(res http.ResponseWriter, req *http.Request) {
-	gothic.BeginAuthHandler(res, req)
-}
-
-func (app *application) showTemplates(res http.ResponseWriter, req *http.Request) {
-	t, err := template.ParseFiles("cmd/web/index.html")
-	if err != nil {
-		fmt.Println(err)
-		res.WriteHeader(http.StatusInternalServerError)
-	}
-	t.Execute(res, false)
-}
-
-func (app *application) auth(res http.ResponseWriter, req *http.Request) {
-	log.Println("In AUTH")
-	user, err := gothic.CompleteUserAuth(res, req)
-
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	s, err := app.users.GetID(user.UserID)
-
-	if s != nil {
-		t, err := template.ParseFiles("cmd/web/sucess.html")
-		if err != nil {
-			fmt.Println(err)
-			res.WriteHeader(http.StatusInternalServerError)
-		}
-		log.Println("Parsed the template")
-		t.Execute(res, user)
-		return
-	} else {
-		id, err := app.users.Insert(user.UserID, user.Email, 1)
-		fmt.Println(user.UserID)
-		if err != nil {
-			fmt.Println("Error occured during insert to database")
-		}
-		fmt.Println(id)
-		t, err := template.ParseFiles("cmd/web/sucess.html")
-		if err != nil {
-			fmt.Println(err)
-			res.WriteHeader(http.StatusInternalServerError)
-		}
-		log.Println("Parsed the template")
-		t.Execute(res, user)
-	}
 }
