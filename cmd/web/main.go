@@ -7,14 +7,13 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gopheramit/Learning-Python/pkg/models/psql"
-
-	_ "github.com/lib/pq"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/gopheramit/Learning-Python/pkg/models/mysql"
 )
 
 type application struct {
 	errorLog *log.Logger
-	users    *psql.UserModel
+	users    *mysql.UserModel
 }
 
 func main() {
@@ -23,20 +22,18 @@ func main() {
 	// connStr := "user=postgres dbname=demo password=achal1234 host=localhost sslmode=disable"
 	//dsn := flag.String("dsn", "user=postgres dbname=demo password=achal1234 host=localhost sslmode=disable", "PSQL data source name")
 
-	dsn := flag.String("dsn", "user=postgres1 dbname=demo password=achal1234 host=localhost sslmode=disable", "PSQL data source name")
+	dsn := flag.String("dsn", "web:achal@1234@/demo?parseTime=true", "MySQL data source name")
 	flag.Parse()
 
 	db, err := openDB(*dsn)
 	if err != nil {
 		errorLog.Fatal(err)
-		log.Println(err)
 	}
 	defer db.Close()
-	flag.Parse()
 
 	app := &application{
 		errorLog: errorLog,
-		users:    &psql.UserModel{DB: db},
+		users:    &mysql.UserModel{DB: db},
 	}
 
 	srv := &http.Server{
@@ -51,18 +48,12 @@ func main() {
 
 }
 func openDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", dsn)
+	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		log.Println(err)
-		panic(err)
-
+		return nil, err
 	}
-	defer db.Close()
-
-	err = db.Ping()
-	if err != nil {
-		log.Println(err)
-		panic(err)
+	if err = db.Ping(); err != nil {
+		return nil, err
 	}
 	return db, nil
 }

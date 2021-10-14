@@ -61,7 +61,6 @@ func (app *application) auth(res http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		log.Println(err)
-
 		return
 	}
 	s, err := app.users.GetID(user.UserID)
@@ -77,6 +76,7 @@ func (app *application) auth(res http.ResponseWriter, req *http.Request) {
 		return
 	} else {
 		id, err := app.users.Insert(user.UserID, user.Email, 1)
+		fmt.Println(user.UserID)
 		if err != nil {
 			fmt.Println("Error occured during insert to database")
 		}

@@ -1,4 +1,4 @@
-package psql
+package mysql
 
 import (
 	"database/sql"
@@ -16,7 +16,7 @@ type UserModel struct {
 
 func (m *UserModel) Insert(userid string, email string, taskid int) (int, error) {
 
-	stmt := `INSERT INTO pythonuser values($1,$2,$3);`
+	stmt := `INSERT INTO PYTHONUSER values(?,?,?);`
 	result, err := m.DB.Exec(stmt, userid, email, taskid)
 	if err != nil {
 		fmt.Println("error in executing db.exec" + err.Error())
@@ -32,7 +32,7 @@ func (m *UserModel) Insert(userid string, email string, taskid int) (int, error)
 
 func (m *UserModel) GetID(id string) (*models.PythonUser, error) {
 
-	stmt := `SELECT userid,email,taskid from pythonuser where userid = $1`
+	stmt := `SELECT userid,email,taskid from  PYTHONUSER where userid =?`
 	row := m.DB.QueryRow(stmt, id)
 	s := &models.PythonUser{}
 	err := row.Scan(&s.UserID, &s.Email, &s.TaskID)
@@ -45,5 +45,3 @@ func (m *UserModel) GetID(id string) (*models.PythonUser, error) {
 	}
 	return s, nil
 }
-
-func (m *UserModel) Latest() ([]*models.PythonUser, error) { return nil, nil }
