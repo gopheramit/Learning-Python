@@ -12,8 +12,9 @@ import (
 )
 
 type application struct {
-	errorLog *log.Logger
-	users    *mysql.UserModel
+	logger *log.Logger
+	users  *mysql.UserModel
+	//logger *log.Logger
 }
 
 func main() {
@@ -30,15 +31,15 @@ func main() {
 		errorLog.Fatal(err)
 	}
 	defer db.Close()
-
+	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 	app := &application{
-		errorLog: errorLog,
-		users:    &mysql.UserModel{DB: db},
+		logger: logger,
+		users:  &mysql.UserModel{DB: db},
 	}
 
 	srv := &http.Server{
 		Addr:     *addr,
-		ErrorLog: errorLog,
+		ErrorLog: logger,
 		Handler:  app.routes(),
 	}
 
