@@ -39,37 +39,29 @@ func (app *application) auth(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	s, err := app.users.GetID(user.UserID)
+	if s != nil {
+		app.logger.Println("inserting new data")
+		if err != nil {
 
+			res.WriteHeader(http.StatusInternalServerError)
+		}
+
+		return
+	} else {
+		id, err := app.users.Insert(user.UserID, user.Email, 1)
+		fmt.Println(user.UserID)
+
+		if err != nil {
+			fmt.Println("Error occured during insert to database")
+		}
+		//fmt.Println(id)
+		app.logger.Println(id)
+
+	}
 	err = app.writeJSON(res, http.StatusOK, s, nil)
 	if err != nil {
 		app.serverErrorResponse(res, req, err)
 	}
-
-	// if s != nil {
-	// 	t, err := template.ParseFiles("cmd/web/sucess.html")
-	// 	if err != nil {
-	// 		fmt.Println(err)
-	// 		res.WriteHeader(http.StatusInternalServerError)
-	// 	}
-	// 	log.Println("Parsed the template")
-	// 	t.Execute(res, user)
-	// 	return
-	// } else {
-	// 	id, err := app.users.Insert(user.UserID, user.Email, 1)
-	// 	fmt.Println(user.UserID)
-
-	// 	if err != nil {
-	// 		fmt.Println("Error occured during insert to database")
-	// 	}
-	// 	fmt.Println(id)
-	// 	t, err := template.ParseFiles("cmd/web/sucess.html")
-	// 	if err != nil {
-	// 		fmt.Println(err)
-	// 		res.WriteHeader(http.StatusInternalServerError)
-	// 	}
-	// 	log.Println("Parsed the template")
-	// 	t.Execute(res, user)
-	// }
 }
 
 func (app *application) Login(w http.ResponseWriter, r *http.Request) {
@@ -94,16 +86,14 @@ func (app *application) Task(w http.ResponseWriter, r *http.Request) {
 	task, _ := app.users.GetTaskByID(tid)
 
 	if task != nil {
-		t, err := template.ParseFiles("cmd/web/task.page.tmpl")
+		err := app.writeJSON(w, http.StatusOK, task, nil)
 		if err != nil {
-			fmt.Println(err)
-			w.WriteHeader(http.StatusInternalServerError)
+			app.serverErrorResponse(w, r, err)
 		}
-		log.Println("Parsed the template task values are " + task.TaskName)
-		t.Execute(w, task)
-		return
 	} else {
-		w.Write([]byte("No Task Found"))
+		app.logger.Println("Task for taskid see below not found")
+		app.logger.Println(tid)
+
 	}
 }
 
@@ -114,20 +104,18 @@ func (app *application) TechContent(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) NextTask(w http.ResponseWriter, r *http.Request) {
 	var taskId int = 1
-
-	tid, _ := app.users.IncrementTaskId(taskId, "104831921254349297331")
+	var userId = ""
+	tid, _ := app.users.IncrementTaskId(taskId, userId)
 	task, _ := app.users.GetTaskByID(tid)
 
 	if task != nil {
-		t, err := template.ParseFiles("cmd/web/task.page.tmpl")
+		err := app.writeJSON(w, http.StatusOK, task, nil)
 		if err != nil {
-			fmt.Println(err)
-			w.WriteHeader(http.StatusInternalServerError)
+			app.serverErrorResponse(w, r, err)
 		}
-		log.Println("Parsed the template task values are " + task.TaskName)
-		t.Execute(w, task)
-		return
 	} else {
-		w.Write([]byte("No Task Found"))
+		app.logger.Println("Task for taskid see below not found")
+		app.logger.Println(tid)
+
 	}
 }
