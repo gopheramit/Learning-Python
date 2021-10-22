@@ -35,5 +35,5 @@ func (app *application) routes() http.Handler {
 	mux.Get("/auth/:provider/callback", http.HandlerFunc(app.auth))
 	mux.Get("/auth/:provider", http.HandlerFunc(gothic.BeginAuthHandler))
 	mux.Get("/", http.HandlerFunc(app.showTemplates))
-	return mux
+	return app.enableCORS(mux)
 }
