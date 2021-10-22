@@ -25,17 +25,14 @@ func (app *application) routes() http.Handler {
 		google.New("263741611747-2bgmmh2vnbjvt02c3m8s30ujbb76obgf.apps.googleusercontent.com", "DoN4QZCXaa3TJfr4BJZMQZNo", "http://localhost:4000/auth/google/callback", "email", "profile"),
 	)
 	mux := pat.New()
-
 	mux.Get("/login", http.HandlerFunc(app.Login))
 	mux.Get("/aboutus", http.HandlerFunc(app.AboutUs))
 	mux.Get("/privacypolicy", http.HandlerFunc(app.PrivacyPolicy))
 	mux.Get("/task", http.HandlerFunc(app.Task))
 	mux.Get("/techcontent", http.HandlerFunc(app.TechContent))
 	mux.Get("/next", http.HandlerFunc(app.NextTask))
-
 	mux.Get("/auth/:provider/callback", http.HandlerFunc(app.auth))
 	mux.Get("/auth/:provider", http.HandlerFunc(gothic.BeginAuthHandler))
 	mux.Get("/", http.HandlerFunc(app.showTemplates))
-
 	return mux
 }

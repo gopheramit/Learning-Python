@@ -103,6 +103,7 @@ func (app *application) TechContent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) NextTask(w http.ResponseWriter, r *http.Request) {
+	
 	var taskId int = 1
 	var userId = ""
 	tid, _ := app.users.IncrementTaskId(taskId, userId)
