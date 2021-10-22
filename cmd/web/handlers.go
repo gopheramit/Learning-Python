@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"text/template"
 
+	"github.com/gopheramit/Learning-Python/pkg/models"
 	"github.com/markbates/goth/gothic"
 )
 
@@ -81,7 +83,12 @@ func (app *application) PrivacyPolicy(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) Task(w http.ResponseWriter, r *http.Request) {
 
-	var tid int = 1
+	//var tid int = 1
+	tid, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	if err != nil || tid < 1 {
+		app.notFoundResponse(w, r)
+		return
+	}
 
 	task, _ := app.users.GetTaskByID(tid)
 
@@ -103,9 +110,16 @@ func (app *application) TechContent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) NextTask(w http.ResponseWriter, r *http.Request) {
-	
-	var taskId int = 1
-	var userId = ""
+
+	t := &models.PythonUser{}
+
+	err := app.readJSON(w, r, t)
+	if err != nil {
+		app.errorResponse(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+	taskId := t.TaskID
+	userId := t.UserID
 	tid, _ := app.users.IncrementTaskId(taskId, userId)
 	task, _ := app.users.GetTaskByID(tid)
 
