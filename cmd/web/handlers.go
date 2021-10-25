@@ -112,6 +112,7 @@ func (app *application) TechContent(w http.ResponseWriter, r *http.Request) {
 func (app *application) NextTask(w http.ResponseWriter, r *http.Request) {
 
 	t := &models.PythonUser{}
+	//w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	err := app.readJSON(w, r, t)
 	if err != nil {
