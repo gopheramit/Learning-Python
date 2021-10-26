@@ -82,7 +82,7 @@ func (app *application) PrivacyPolicy(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) Task(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	//var tid int = 1
 	tid, err := strconv.Atoi(r.URL.Query().Get(":id"))
 	if err != nil || tid < 1 {
@@ -110,7 +110,10 @@ func (app *application) TechContent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) NextTask(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("ccess-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "*")
 	t := &models.PythonUser{}
 	//w.Header().Set("Access-Control-Allow-Origin", "*")
 
