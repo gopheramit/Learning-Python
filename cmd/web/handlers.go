@@ -33,6 +33,53 @@ func (app *application) showTemplates(res http.ResponseWriter, req *http.Request
 	t.Execute(res, false)
 }
 
+func (app *application) GetUserById(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	tid := params.ByName("userid")
+	snil := &models.PythonUser{
+		UserID: "",
+		Email:  "",
+		TaskID: 1,
+	}
+
+	s, err := app.users.GetID(tid)
+	if s != nil {
+		app.logger.Println("inserting new data")
+		if err != nil {
+
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+
+		err := app.writeJSON(w, http.StatusOK, s, nil)
+		if err != nil {
+			app.serverErrorResponse(w, r, err)
+		}
+	} else {
+		app.writeJSON(w, http.StatusOK, snil, nil)
+	}
+}
+
+func (app *application) PostUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("ccess-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "*")
+	t := &models.PythonUser{}
+	//w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	err := app.readJSON(w, r, t)
+	if err != nil {
+		app.errorResponse(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	id, err := app.users.Insert(t.UserID, t.Email, t.TaskID)
+	if err != nil {
+		fmt.Println("Error occured during insert to database")
+	}
+	app.logger.Println(id)
+}
+
 func (app *application) auth(res http.ResponseWriter, req *http.Request) {
 	log.Println("In AUTH")
 	user, err := gothic.CompleteUserAuth(res, req)
