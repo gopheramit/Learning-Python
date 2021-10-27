@@ -10,6 +10,7 @@ func (app *application) routes() http.Handler {
 
 	router := httprouter.New()
 	router.HandlerFunc(http.MethodPut, "/next", app.NextTask)
+	router.HandlerFunc(http.MethodGet, "/task/:id", app.Task)
 	// Return the httprouter instance.
 	return app.enableCORS(router)
 

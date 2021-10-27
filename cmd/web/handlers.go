@@ -8,6 +8,7 @@ import (
 	"text/template"
 
 	"github.com/gopheramit/Learning-Python/pkg/models"
+	"github.com/julienschmidt/httprouter"
 	"github.com/markbates/goth/gothic"
 )
 
@@ -84,13 +85,15 @@ func (app *application) PrivacyPolicy(w http.ResponseWriter, r *http.Request) {
 func (app *application) Task(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	//var tid int = 1
-	tid, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	// tid, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	params := httprouter.ParamsFromContext(r.Context())
+	tid, err := strconv.ParseInt(params.ByName("id"), 10, 64)
 	if err != nil || tid < 1 {
 		app.notFoundResponse(w, r)
 		return
 	}
 
-	task, _ := app.users.GetTaskByID(tid)
+	task, _ := app.users.GetTaskByID(int(tid))
 
 	if task != nil {
 		err := app.writeJSON(w, http.StatusOK, task, nil)
