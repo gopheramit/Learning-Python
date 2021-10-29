@@ -63,13 +63,20 @@ func (m *UserModel) GetTaskByID(id int) (*models.Tasks, error) {
 }
 
 func (m *UserModel) IncrementTaskId(taskId int, userId string) (int, error) {
-	taskId += 1
-	stmt := `update PYTHONUSER set TaskID=? where userID =?`
-	_, err := m.DB.Exec(stmt, taskId, userId)
+	taskId = taskId + 1
+
+	upd, err := m.DB.Prepare(`update PYTHONUSER set TaskID=? where userID =?`)
+
 	if err != nil {
-		fmt.Println("error in executing db.exec" + err.Error())
-		return 0, err
+		panic(err.Error())
 	}
+	upd.Exec(taskId, userId)
+	// log.Println("UPDATE: Name: " + name + " | City: " + city)
+	// _, err := m.DB.Exec(stmt, taskId, userId)
+	// if err != nil {
+	// 	fmt.Println("error in executing db.exec" + err.Error())
+	// 	return 0, err
+	// }
 	return taskId, nil
 
 }
