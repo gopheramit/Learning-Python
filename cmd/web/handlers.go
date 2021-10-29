@@ -78,6 +78,8 @@ func (app *application) PostUser(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error occured during insert to database")
 	}
 	app.logger.Println(id)
+	app.writeJSON(w, http.StatusOK, err, nil)
+
 }
 
 func (app *application) auth(res http.ResponseWriter, req *http.Request) {
