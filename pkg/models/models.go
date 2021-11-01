@@ -17,4 +17,5 @@ type Tasks struct {
 	TaskName        string
 	TaskDescription string
 	Difficulty      string
+	Output          string
 }

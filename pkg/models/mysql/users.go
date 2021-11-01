@@ -48,10 +48,10 @@ func (m *UserModel) GetID(id string) (*models.PythonUser, error) {
 
 func (m *UserModel) GetTaskByID(id int) (*models.Tasks, error) {
 
-	stmt := `SELECT TaskID,TaskName,TaskDescription,Difficulty from TASKS where TaskID =?`
+	stmt := `SELECT TaskID,TaskName,TaskDescription,Difficulty,output from TASKS where TaskID =?`
 	row := m.DB.QueryRow(stmt, id)
 	s := &models.Tasks{}
-	err := row.Scan(&s.TaskID, &s.TaskName, &s.TaskDescription, &s.Difficulty)
+	err := row.Scan(&s.TaskID, &s.TaskName, &s.TaskDescription, &s.Difficulty, &s.Output)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, models.ErrNoRecord
